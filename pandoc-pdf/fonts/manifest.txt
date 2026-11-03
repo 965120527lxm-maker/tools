@@ -1,0 +1,7 @@
+# Required / recommended font families for academic/default
+# Check with: fc-list ":family=<name>"   or kpsewhich for TeX fonts
+Noto Serif CJK SC
+Noto Sans CJK SC
+Noto Sans Mono
+TeX Gyre Termes
+TeX Gyre Heros

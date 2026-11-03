@@ -1,0 +1,28 @@
+%% lxm-academic.sty — shared academic look (scaffold)
+%% Installed into TEXMFHOME by tools/tex/scripts/deploy.sh
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lxm-academic}[2026/08/02 v0.1.0 lxm academic scaffold]
+
+% Fonts aligned with tools/pandoc-pdf academic/default (xeCJK / fontspec)
+\RequirePackage{ifxetex}
+\RequirePackage{ifluatex}
+\ifxetex
+  \RequirePackage{fontspec}
+  \RequirePackage{xeCJK}
+  \setmainfont{TeX Gyre Termes}
+  \setsansfont{TeX Gyre Heros}
+  \setCJKmainfont{Noto Serif CJK SC}
+  \setCJKsansfont{Noto Sans CJK SC}
+\else
+  \PackageWarning{lxm-academic}{Prefer xelatex for CJK; fonts not set}
+\fi
+
+% Geometry close to pandoc-pdf academic/default
+\RequirePackage[a4paper,margin=2.2cm]{geometry}
+\RequirePackage{setspace}
+\onehalfspacing
+\RequirePackage{xcolor}
+\definecolor{lxmBlue}{HTML}{1E3A5F}
+\definecolor{lxmOrange}{HTML}{E67E22}
+
+\endinput

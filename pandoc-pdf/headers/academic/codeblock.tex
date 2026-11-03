@@ -1,0 +1,31 @@
+\usepackage{xcolor}
+\usepackage{fvextra}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  commandchars=\\\{\},
+  breaklines,
+  breakanywhere,
+  fontsize=\small
+}
+
+\makeatletter
+\AtBeginDocument{%
+  \@ifundefined{Shaded}{}{%
+    \renewenvironment{Shaded}
+    {\begin{tcolorbox}[
+      breakable,
+      colback=gray!4,
+      colframe=gray!45,
+      boxrule=0.4pt,
+      arc=1mm,
+      left=6pt,
+      right=6pt,
+      top=6pt,
+      bottom=6pt
+    ]}
+    {\end{tcolorbox}}%
+  }%
+}
+\makeatother

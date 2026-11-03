@@ -1,0 +1,4 @@
+interface:
+  display_name: "General Writing"
+  short_description: "Natural Chinese and English writing beyond formal reports"
+  default_prompt: "Use $lxm-general-writing to rewrite this text naturally without changing its facts or intent."

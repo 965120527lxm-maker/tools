@@ -1,0 +1,18 @@
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+
+\renewenvironment{quote}
+  {\begin{tcolorbox}[
+    breakable,
+    colback=gray!6,
+    colframe=gray!60,
+    boxrule=0pt,
+    leftrule=3pt,
+    arc=1mm,
+    left=8pt,
+    right=8pt,
+    top=6pt,
+    bottom=6pt
+  ]}
+  {\end{tcolorbox}}

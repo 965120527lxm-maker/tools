@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*.pptx
+.DS_Store
+.venv/
+venv/
+examples/formula_cache/
+examples/diffusion_figs/

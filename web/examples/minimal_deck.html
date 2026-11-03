@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Web Deck · tools.web.deck</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0f172a;--slide:#ffffff;--accent:#2563eb;--muted:#64748b;--border:#e2e8f0}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);font-family:system-ui,-apple-system,sans-serif;overflow:hidden}
+.toolbar{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:.45rem .85rem;background:rgba(15,23,42,.92);color:#e2e8f0;font-size:.78rem;backdrop-filter:blur(8px)}
+.toolbar a{color:#93c5fd;margin-left:.65rem;text-decoration:none}
+.toolbar button{background:#1e293b;border:1px solid #334155;color:#e2e8f0;border-radius:6px;padding:.3rem .65rem;cursor:pointer;font-size:.78rem}
+.toolbar button:hover{background:#334155}
+#progress{flex:1;max-width:200px;height:4px;background:#334155;border-radius:2px;margin:0 .75rem;overflow:hidden}
+#progress>i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.stage{display:flex;align-items:center;justify-content:center;height:100vh;padding:2.5rem 1rem 3rem}
+.slide{display:none;width:min(1120px,96vw);aspect-ratio:16/9;max-height:calc(100vh - 5rem);background:var(--slide);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.35);padding:1.4rem 1.6rem;overflow-y:auto}
+.slide.active{display:block}
+.slide.cover{background:linear-gradient(145deg,#1e3a8a,#2563eb);color:#fff;display:none;align-items:center;justify-content:center;text-align:center}
+.slide.cover.active{display:flex}
+.slide-header{margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:2px solid var(--border)}
+.slide-header .sec{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.slide-header h2{margin:.15rem 0 0;font-size:1.25rem;line-height:1.25;color:#0f172a}
+.cover-inner h1{font-size:2rem;margin:0 0 .5rem}
+.cover .subtitle{font-size:1.05rem;opacity:.9;margin:0}
+.cover .meta{margin-top:1.5rem;opacity:.75;font-size:.85rem}
+.lead{font-size:.88rem;line-height:1.5;margin:.2rem 0 .6rem}
+ul{margin:.35rem 0 .6rem;padding-left:1.2rem;font-size:.84rem;line-height:1.45}
+li{margin:.15rem 0}
+.note{font-size:.78rem;color:var(--muted);margin:.5rem 0 0}
+.takeaway{margin-top:.65rem;padding:.55rem .75rem;background:#eff6ff;border-left:3px solid var(--accent);font-size:.82rem;color:#1e3a8a;border-radius:0 6px 6px 0}
+.table-wrap{overflow-x:auto;margin:.4rem 0}
+.data-table{width:100%;border-collapse:collapse;font-size:.74rem}
+.data-table th,.data-table td{border:1px solid var(--border);padding:.28rem .4rem;text-align:left}
+.data-table th{background:#f8fafc;font-weight:600}
+.data-table.compact th,.data-table.compact td{padding:.2rem .35rem;font-size:.7rem}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.4rem 0}
+.twocol h3{margin:0 0 .35rem;font-size:.85rem;color:#1e40af}
+.flow{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
+.flow-step{flex:1;min-width:120px;background:#f1f5f9;border:1px solid var(--border);border-radius:8px;padding:.55rem .6rem;font-size:.78rem;position:relative}
+.flow-step span{display:inline-block;background:var(--accent);color:#fff;width:1.2rem;height:1.2rem;line-height:1.2rem;text-align:center;border-radius:50%;font-size:.7rem;margin-right:.35rem}
+.math.display{margin:.6rem 0;text-align:center;font-size:.95rem;overflow-x:auto}
+.chart-box{position:relative;height:200px;margin:.4rem 0}
+.chart-box.tall{height:260px}
+.figure{margin:.45rem 0;text-align:center}
+.figure img{max-width:100%;width:auto;height:auto;object-fit:contain;border-radius:6px;border:1px solid var(--border)}
+.figure figcaption,.figure-panel figcaption{font-size:.72rem;color:var(--muted);margin-top:.25rem;line-height:1.35}
+.figure-row{display:flex;gap:.65rem;align-items:flex-start;justify-content:center;margin:.4rem 0}
+.figure-panel{flex:1;min-width:0;text-align:center}
+.figure-panel img{max-width:100%;width:auto;height:auto;object-fit:contain;border-radius:6px;border:1px solid var(--border)}
+.figure-split{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;margin:.4rem 0}
+.nav-hint{position:fixed;bottom:.5rem;left:50%;transform:translateX(-50%);color:#64748b;font-size:.72rem;z-index:20}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span id="slide-label">1 / N</span>
+  <div id="progress"><i id="progress-bar"></i></div>
+  <div>
+    <button id="prev">←</button>
+    <button id="next">→</button>
+    
+  </div>
+</div>
+<div class="stage" id="stage"></div>
+<p class="nav-hint">← → 翻页 · F 全屏</p>
+<script>
+const SLIDES = [{"title": "", "section": "封面", "body": "\n      <div class=\"cover-inner\">\n        <h1>网页版幻灯片</h1>\n        <p class=\"subtitle\">tools.web.deck · KaTeX + Chart.js</p>\n        <p class=\"meta\">lxm · 2026-08</p>\n      </div>", "kind": "cover", "chart": null}, {"title": "公共组件", "section": "示例", "body": "\n    <div class=\"twocol\">\n      <div><h3>版式</h3><ul><li>封面 / 章节 / 内容页</li><li>双栏 bullet</li><li>表格 · 流程 · 公式</li></ul></div>\n      <div><h3>编辑方式</h3><ul><li>Python 里拼 HTML 片段</li><li>运行 generate_*.py 生成 deck.html</li><li>浏览器 ← → 翻页</li></ul></div>\n    </div><div class=\"takeaway\">项目脚本只保留内容；引擎与样式走 tools.web.deck。</div>", "kind": "content", "chart": null}, {"title": "公式示例", "section": "示例", "body": "\n    <p class=\"lead\">正文 + display math，翻页时 KaTeX 自动渲染。</p>\n    <div class=\"math display\">\\[\\hat{x} = x_{t_0} + \\alpha\\,\\Delta_{\\text{type}}\\]</div>\n    ", "kind": "content", "chart": null}, {"title": "流程", "section": "示例", "body": "<div class=\"flow\"><div class=\"flow-step\"><span>1</span>outline.md</div><div class=\"flow-step\"><span>2</span>generate_web_deck.py</div><div class=\"flow-step\"><span>3</span>deck.html</div><div class=\"flow-step\"><span>4</span>python -m tools.web serve</div></div><div class=\"table-wrap\"><table class=\"data-table\"><thead><tr><th>模块</th><th>职责</th></tr></thead><tbody><tr><td>web/deck/components.py</td><td>tbl / bullets / formula / figure</td></tr><tr><td>web/deck/deck.py</td><td>WebDeck 收集与 save</td></tr><tr><td>web/serve.py</td><td>本地预览 HTTP 服务</td></tr></tbody></table></div>", "kind": "content", "chart": null}, {"title": "图片示例", "section": "示例", "body": "<figure class=\"figure\"><img src=\"figures/sample_panel.png\" alt=\"相对路径 · 与 deck.html 同目录 serve\" style=\"max-height:220px\"/><figcaption>相对路径 · 与 deck.html 同目录 serve</figcaption></figure><div class=\"takeaway\">也可用 figure(..., embed=True) 嵌成单文件。</div>", "kind": "content", "chart": null}];
+const CHARTS = {};
+let idx = 0;
+const stage = document.getElementById('stage');
+const built = {};
+
+SLIDES.forEach((s, i) => {
+  const el = document.createElement('section');
+  el.className = 'slide' + (s.kind === 'cover' ? ' cover' : '') + (i === 0 ? ' active' : '');
+  el.dataset.idx = i;
+  if (s.kind === 'cover') {
+    el.innerHTML = s.body;
+  } else {
+    el.innerHTML = `<div class="slide-header"><div class="sec">${s.section}</div><h2>${s.title}</h2></div><div class="slide-body">${s.body}</div>`;
+  }
+  stage.appendChild(el);
+});
+
+function renderMath() {
+  if (window.renderMathInElement) {
+    renderMathInElement(document.querySelector('.slide.active'), {
+      delimiters: [{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],
+      throwOnError: false
+    });
+  }
+}
+
+function buildChart(id, cfg) {
+  if (built[id]) return;
+  const canvas = document.getElementById(id);
+  if (!canvas || !cfg) return;
+  built[id] = new Chart(canvas, cfg);
+}
+
+function onSlide(i) {
+  idx = Math.max(0, Math.min(SLIDES.length - 1, i));
+  document.querySelectorAll('.slide').forEach((el, j) => el.classList.toggle('active', j === idx));
+  document.getElementById('slide-label').textContent = `${idx + 1} / ${SLIDES.length}` + (SLIDES[idx].title ? ' · ' + SLIDES[idx].title : '');
+  document.getElementById('progress-bar').style.width = ((idx + 1) / SLIDES.length * 100) + '%';
+  renderMath();
+  const s = SLIDES[idx];
+  if (s.chart && CHARTS[s.chart]) buildChart(s.chart, CHARTS[s.chart]);
+}
+
+document.getElementById('prev').onclick = () => onSlide(idx - 1);
+document.getElementById('next').onclick = () => onSlide(idx + 1);
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') onSlide(idx - 1);
+  if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); onSlide(idx + 1); }
+  if (e.key === 'f' || e.key === 'F') document.documentElement.requestFullscreen?.();
+});
+onSlide(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# Style: academic/default
+# Usage (after deploy):
+#   pandoc note.md -o note.pdf --defaults=academic/default
+#
+# Paths below are resolved against the Pandoc data directory
+# (typically ~/.local/share/pandoc).
+
+from: markdown
+to: pdf
+pdf-engine: xelatex
+
+standalone: true
+highlight-style: kate
+
+# Search headers relative to data-dir
+resource-path:
+  - .
+
+include-in-header:
+  - headers/academic/layout.tex
+  - headers/academic/quote.tex
+  - headers/academic/codeblock.tex
+
+variables:
+  # CJK body — widely available via fonts-noto-cjk
+  CJKmainfont: "Noto Serif CJK SC"
+  CJKsansfont: "Noto Sans CJK SC"
+  CJKmonofont: "Noto Sans CJK SC"
+  # Latin body — TeX Gyre Termes ≈ Times; falls back if Times New Roman present
+  mainfont: "TeX Gyre Termes"
+  sansfont: "TeX Gyre Heros"
+  monofont: "Noto Sans Mono"
+  geometry: margin=2.2cm
+  fontsize: 11pt
+  linestretch: 1.35
+  colorlinks: true
+  linkcolor: "NavyBlue"
+  urlcolor: "NavyBlue"
+  citecolor: "NavyBlue"
